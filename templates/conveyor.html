@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Conveyor - Waste Sorting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conveyor.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Conveyor Belt Sorter 🤖</h1>
+            <div class="stats-container">
+                <div class="stat-box recyclable">
+                    <span class="icon">♻️</span>
+                    <span class="count" id="recyclable-count">0</span>
+                    <span class="label">Recyclable</span>
+                </div>
+                <div class="stat-box organic">
+                    <span class="icon">🌱</span>
+                    <span class="count" id="organic-count">0</span>
+                    <span class="label">Organic</span>
+                </div>
+                <div class="stat-box trash">
+                    <span class="icon">🗑️</span>
+                    <span class="count" id="trash-count">0</span>
+                    <span class="label">Trash</span>
+                </div>
+                <button id="resetStatsBtn" class="control-btn">Reset Stats</button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="video-container">
+                <div class="conveyor-region" id="conveyorRegion"></div>
+                <video id="camera" autoplay playsinline></video>
+                <canvas id="overlay" class="detection-overlay"></canvas>
+                <canvas id="canvas" style="display: none;"></canvas>
+                
+                <div class="conveyor-controls">
+                    <button id="startBtn" class="control-btn">▶️ Start Sorting</button>
+                    <button id="pauseBtn" class="control-btn" disabled>⏸️ Pause</button>
+                    <button id="configBtn" class="control-btn">⚙️ Configure</button>
+                </div>
+            </div>
+            
+            <div class="results-panel">
+                <h2>Sorting Results</h2>
+                <div id="results" class="results-list"></div>
+                <div class="conveyor-indicator">
+                    <div class="arrow left-arrow"></div>
+                    <div class="belt"></div>
+                    <div class="arrow right-arrow"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="configPanel" class="config-panel">
+            <h3>Conveyor Configuration</h3>
+            <div class="config-controls">
+                <div class="config-group">
+                    <label for="conveyorEnabled">Enable Region:</label>
+                    <input type="checkbox" id="conveyorEnabled" checked>
+                </div>
+                <div class="config-group">
+                    <label>Adjust Region:</label>
+                    <button id="editRegionBtn" class="config-btn">Edit Region</button>
+                </div>
+                <div class="config-group">
+                    <label for="confidenceThreshold">Confidence Threshold:</label>
+                    <input type="range" id="confidenceThreshold" min="40" max="90" value="60">
+                    <span id="confidenceValue">60%</span>
+                </div>
+                <button id="saveConfigBtn" class="config-btn">Save Configuration</button>
+                <button id="closeConfigBtn" class="config-btn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/conveyor.js') }}"></script>
+</body>
+</html> 

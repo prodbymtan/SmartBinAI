@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBin AI - Intelligent Waste Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>SmartBin <span class="logo-leaf">🌱</span></h1>
+            <p class="tagline">AI-powered waste classification system</p>
+        </header>
+
+        <div class="two-column-layout">
+            <!-- Left column: Camera and controls -->
+            <div class="camera-column">
+                <div class="camera-container">
+                    <video id="camera" autoplay playsinline></video>
+                    <div id="preview" style="display: none;">
+                        <img id="previewImage" src="#" alt="Preview">
+                    </div>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                </div>
+
+                <div class="controls">
+                    <button id="cameraButton" class="btn btn-primary">
+                        <span class="btn-icon"><i class="bi bi-camera"></i></span> Take Photo
+                    </button>
+                    <label for="fileInput" class="btn btn-secondary">
+                        <span class="btn-icon"><i class="bi bi-upload"></i></span> Upload Image
+                    </label>
+                    <input type="file" id="fileInput" style="display: none;" accept="image/*">
+                    <button id="realTimeButton" class="btn btn-accent">
+                        <span class="btn-icon"><i class="bi bi-camera-video"></i></span> Start Detection
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right column: Results -->
+            <div class="results-column">
+                <section class="results-section">
+                    <h2>Waste Classification</h2>
+                    <div id="results">
+                        <!-- Results will be dynamically added here -->
+                        <div class="empty-result">
+                            <div class="empty-icon"><i class="bi bi-camera"></i></div>
+                            <p>Take a photo or upload an image to analyze waste items</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Bin reference guide -->
+                    <div class="bin-guide">
+                        <h3>Disposal Guide</h3>
+                        <div class="bin-types">
+                            <div class="bin blue-bin">
+                                <div class="bin-icon"><i class="bi bi-recycle"></i></div>
+                                <div class="bin-info">
+                                    <span class="bin-name">Blue Bin</span>
+                                    <span class="bin-desc">Recyclables</span>
+                                </div>
+                            </div>
+                            <div class="bin green-bin">
+                                <div class="bin-icon"><i class="bi bi-tree"></i></div>
+                                <div class="bin-info">
+                                    <span class="bin-name">Green Bin</span>
+                                    <span class="bin-desc">Organics</span>
+                                </div>
+                            </div>
+                            <div class="bin black-bin">
+                                <div class="bin-icon"><i class="bi bi-trash"></i></div>
+                                <div class="bin-info">
+                                    <span class="bin-name">Black Bin</span>
+                                    <span class="bin-desc">General Waste</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <button id="debugDetectBtn" style="background: #f44336; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">
+            Detect This Image
+        </button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/debug.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('debugDetectBtn').addEventListener('click', () => {
+                const formData = new FormData();
+                
+                const imgSrc = document.querySelector('video, #previewImage').src;
+                if (imgSrc) {
+                    fetch(imgSrc)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            formData.append('image', blob);
+                            
+                            document.getElementById('results').innerHTML = `
+                                <div class="loading-container">
+                                    <div class="loading-spinner"></div>
+                                    <p>Analyzing waste items...</p>
+                                </div>
+                            `;
+                            
+                            return fetch('/classify', {
+                                method: 'POST',
+                                body: formData
+                            });
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                displayError(data.error);
+                            } else {
+                                updateResultsPanel(data.detections);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            displayError("Classification failed. Please try again.");
+                        });
+                } else {
+                    displayError("No image available. Please take or upload a photo first.");
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
