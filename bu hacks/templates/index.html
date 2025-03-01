@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBin Lite - Waste Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>SmartBin Lite 🌱</h1>
+        <div class="upload-section">
+            <div class="camera-container">
+                <video id="camera" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            <div class="buttons">
+                <button id="cameraButton" class="btn">📸 Take Photo</button>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <button id="uploadButton" class="btn">📤 Upload Image</button>
+            </div>
+        </div>
+        
+        <div id="preview" class="preview-section" style="display: none;">
+            <img id="previewImage" src="" alt="Preview">
+            <button id="classifyButton" class="btn">Classify Waste</button>
+        </div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <h2>Classification Results</h2>
+            <div class="result-card">
+                <p id="categoryText"></p>
+                <p id="binText"></p>
+                <p id="confidenceText"></p>
+                <p id="tipsText"></p>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
